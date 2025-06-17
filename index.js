@@ -1,28 +1,32 @@
- import express from "express"
-
+import express from "express"
+import cors from "cors"
 import mongoose from "mongoose"
 import 'dotenv/config'
 import { userRouter } from "./routes/user_routes.js"
 
 
- const app = express()
+const app = express()
 
-
- const PORT = 7078
+const PORT = process.env.PORT || 7508
 
 const mongoURI = process.env.MONGO_URI
 
- await mongoose.connect(mongoURI)
+export const secret = process.env.JWT_SECRET
 
+// export const SMTP_USER = process.env.SMTP_USER
+
+// export const SMTP_PASS = process.env.SMTP_PASS
 
 app.use(express.json())
 
- 
+app.use(cors());
+
 app.use('/api/v1/users', userRouter)
 
 
+await mongoose.connect(mongoURI)
 
- app.listen(PORT, () => {
-    console.log(`Server is up on port ${PORT}`)
- })
+app.listen(PORT, () => {
+   console.log(`Server is up on port ${PORT}`)
+})
 
