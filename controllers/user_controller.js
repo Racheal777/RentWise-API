@@ -22,13 +22,13 @@ export const signUp = async (req, res) => {
     console.log(findUser, "found")
 
     if (findUser) {
-        return res.status(200).json({ message: `User already exist`});
+        return res.status(200).json({ message: `User already exist` });
     } else {
         const hashPassword = await bcrypt.hash(password, 12);
         console.log("hashPassword", hashPassword)
 
         const otp = otpGenerator(4);
-        console.log("otp",otp);
+        console.log("otp", otp);
 
         // const fullName = new req.Data(req.firstName + req.lastName);
 
@@ -42,7 +42,7 @@ export const signUp = async (req, res) => {
             otpExpiresAt: new Date(Date.now() + 5 * 60 * 1000)
         })
 
-        console.log("savedata",saveUserData)
+        console.log("savedata", saveUserData)
 
         // send token for verification using nodemailer
 
@@ -63,7 +63,19 @@ export const signUp = async (req, res) => {
                 to: email, // list of receivers
                 subject: "OTP MESSAGE", // Subject line
                 text: `Verify your account with this OTP:${otp}`,  // plain text body
-                html: `<b>${otp} Deactivates within 5mins </b>`, // html body
+                html: `<div style="font-family: Arial, sans-serif; color: #222; background: #f9f9f9; padding: 24px; border-radius: 8px;">
+  <h2 style="color: #2d7ff9;">Your One-Time Password (OTP)</h2>
+  <p style="font-size: 18px;">
+    <b style="font-size: 28px; letter-spacing: 4px;">${otp}</b>
+  </p>
+  <p>
+    Please use this OTP to complete your verification. <br>
+    <span style="color: #d9534f;"><b>This code will expire in 5 minutes.</b></span>
+  </p>
+  <p style="font-size: 14px; color: #888;">
+    If you did not request this, please ignore this email.
+  </p>
+</div>`, // html body
             });
 
             console.log("Message sent: %s", info.messageId);
@@ -87,21 +99,21 @@ export const signUp = async (req, res) => {
 
 
 export const loginUser = async (req, res) => {
-  try {
-    const user = await User.findOne({ email: req.body.email });
+    try {
+        const user = await User.findOne({ email: req.body.email });
 
-    if (!user) 
-        return res.status(401).json({ message: 'Invalid credentials' });
+        if (!user)
+            return res.status(401).json({ message: 'Invalid credentials' });
 
-    const isValidPassword = await bcrypt.compare(req.body.password, user.password);
-    if (!isValidPassword) 
-        return res.status(401).json({ message: 'Invalid credentials' });
+        const isValidPassword = await bcrypt.compare(req.body.password, user.password);
+        if (!isValidPassword)
+            return res.status(401).json({ message: 'Invalid credentials' });
 
-    const token = jwt.sign({ userId: user.id, role: user.role }, secret, { expiresIn: '1h' });
-    res.json({ token });
+        const token = jwt.sign({ userId: user.id, role: user.role }, secret, { expiresIn: '1h' });
+        res.json({ token });
 
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error logging in user' });
-  }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error logging in user' });
+    }
 };
