@@ -5,4 +5,5 @@ export const propertiesSchema = Joi.object({
     type: Joi.string(),
     description: Joi.string(),
     image: Joi.string()
+    
 })
