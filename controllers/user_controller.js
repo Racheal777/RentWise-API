@@ -1,8 +1,9 @@
-import { secret } from "../index.js";
+import { secret, SMTP_PASS, SMTP_USER } from "../index.js";
 import { User } from "../models/user_model.js";
+import nodemailer from 'nodemailer';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
-// import nodemailer from 'nodemailer';
+
 
 
 const otpGenerator = (length = 6) => {
@@ -27,6 +28,7 @@ export const signUp = async (req, res) => {
         console.log("hashPassword", hashPassword)
 
         const otp = otpGenerator(4);
+        console.log("otp",otp);
 
         // const fullName = new req.Data(req.firstName + req.lastName);
 
@@ -40,33 +42,35 @@ export const signUp = async (req, res) => {
             otpExpiresAt: new Date(Date.now() + 5 * 60 * 1000)
         })
 
+        console.log("savedata",saveUserData)
+
         // send token for verification using nodemailer
 
-        // // Create a transporter for SMTP
-        // const transporter = nodemailer.createTransport({
-        //     host: "smtp.gmail.com",
-        //     port: 587,
-        //     secure: false, // upgrade later with STARTTLS
-        //     auth: {
-        //         user: SMTP_USER,
-        //         pass: SMTP_PASS,
-        //     },
-        // });
+        // Create a transporter for SMTP
+        const transporter = nodemailer.createTransport({
+            host: "smtp.gmail.com",
+            port: 465,
+            secure: true, // upgrade later with STARTTLS
+            auth: {
+                user: SMTP_USER,
+                pass: SMTP_PASS,
+            },
+        });
 
-        // try {
-        //     const info = await transporter.sendMail({
-        //         from: '"RentWise Team" <RentWiseteam@gmail.com>', // sender address
-        //         to: findUser, // list of receivers
-        //         subject: "OTP MESSAGE", // Subject line
-        //         text: `Verify your account with this OTP:${otp}`,  // plain text body
-        //         html: `<b>${otp} Deactivates within 5mins </b>`, // html body
-        //     });
+        try {
+            const info = await transporter.sendMail({
+                from: SMTP_USER, // sender address
+                to: email, // list of receivers
+                subject: "OTP MESSAGE", // Subject line
+                text: `Verify your account with this OTP:${otp}`,  // plain text body
+                html: `<b>${otp} Deactivates within 5mins </b>`, // html body
+            });
 
-        //     console.log("Message sent: %s", info.messageId);
-        //     console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-        // } catch (err) {
-        //     console.error("Error while sending mail", err);
-        // }
+            console.log("Message sent: %s", info.messageId);
+            console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+        } catch (err) {
+            console.error("Error while sending mail", err);
+        }
 
         // secrete key with jwt
         console.log(`Secret key: ${secret}`)
