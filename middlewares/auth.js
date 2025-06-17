@@ -1,9 +1,10 @@
 import jwt from "jsonwebtoken"
+import { secret } from "../index.js";
 
 export const authenticate = (req, res, next) => {
   try {
     const token = req.header('Authorization').replace('Bearer ', '');
-    const decoded = jwt.verify(token, 'secretkey');
+    const decoded = jwt.verify(token, secret);
     req.user = decoded;
     next();
   } catch (error) {
