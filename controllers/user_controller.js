@@ -1,8 +1,8 @@
-import { secret, SMTP_PASS, SMTP_USER } from "../index.js";
+import { secret } from "../index.js";
 import { User } from "../models/user_model.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
-import nodemailer from 'nodemailer';
+// import nodemailer from 'nodemailer';
 
 
 const otpGenerator = (length = 6) => {
@@ -71,7 +71,7 @@ export const signUp = async (req, res) => {
         // secrete key with jwt
         console.log(`Secret key: ${secret}`)
         const token = jwt.sign(
-            { id: saveUserData.id },
+            { id: saveUserData.id, role: saveUserData.role },
             secret,
             { expiresIn: "1h" }
         )
