@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken"
 import { secret } from "../index.js";
+import { checkPermission } from '../utils/permission.js'
 
 export const authenticate = (req, res, next) => {
   try {
@@ -12,20 +13,28 @@ export const authenticate = (req, res, next) => {
   }
 };
 
-// export const adminAuth = (req, res)=> {
-//   if (req.user.role !== 'admin')
-//     return res.status(401).json({message: 'you are not an admin'})
-// }
 
-// export const tenantAuth = (req, res)=> {
-//   if (req.user.role !== 'tenant')
-//     return res.status(401).json({message: 'you are not a tenant'})
-// }
+export const authorize = (required) => {
+  return (req, res, next) => {
+    const role = req.user.role;
+    const requiredList = Array.isArray(required) ? required : [required];
 
-export const roleAuth = (req, res,next)=>{
-    if(req.user.role !== 'admin'){
-       return res.status(401).json({message: 'you are a tenant'})
-    }else{
-      return res.status(401).json({message: 'you are an admin'})
+    // Check if role is allowed directly
+    if (requiredList.includes(role)) {
+      return next();
     }
-}
+
+    // Check if any of the permissions are allowed
+    const isAllowed = requiredList.every(action => checkPermission(role, action));
+
+    if (!isAllowed) {
+      return res.status(403).json({ message: `Access denied for role ${role}` });
+    }
+
+    next();
+  };
+};
+
+export const secureRoute = (action, controller) => {
+  return [authenticate, authorize(action), controller];
+};
