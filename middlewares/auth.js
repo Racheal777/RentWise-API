@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import { secret } from "../index.js";
+import { secret } from "../config/env.js";
 import { checkPermission } from '../utils/permission.js'
 
 export const authenticate = (req, res, next) => {
