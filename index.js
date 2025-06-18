@@ -3,6 +3,7 @@ import cors from "cors"
 import mongoose from "mongoose"
 import 'dotenv/config'
 import { userRouter } from "./routes/user_routes.js"
+import rentRoute from "./routes/notification_route.js"
 
 
 const app = express()
@@ -22,6 +23,7 @@ app.use(express.json())
 app.use(cors());
 
 app.use('/api/v1/users', userRouter)
+app.use('/api/v1/tenants', rentRoute)
 
 
 await mongoose.connect(mongoURI)
