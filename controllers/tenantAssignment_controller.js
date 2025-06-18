@@ -7,15 +7,10 @@ export const assignUnit = async (req, res) => {
         const { unitId, tenantId, period} = req.body;
     
         const unit = await Unit.findById(unitId);
-        const tenant = await User.findById(tenantId);
     
-        // check unit and tenant validity
-        if (!unit || !tenant) {
-            if (!unit) {
-                res.status(201).json({message: "Unit not found"});
-            } else {
-                res.status(201).json({message: "Tenant not found"});
-            }
+        // check unit validity
+        if (!unit) {
+           res.status(201).json({message: "Unit not found"});
             return;
         }
         
@@ -31,8 +26,7 @@ export const assignUnit = async (req, res) => {
         const endDate = `${date.toLocaleString('default', {month: 'long'})} ${date.getDay()-1}, ${date.getFullYear() + parseInt(period)}`;
     
         const newTenant = await Tenant.create({
-            fullName: `${tenant.firstName} ${tenant.lastName}`,
-            email: tenant.email,
+            tenantId,
             propertyId: unit.propertyId,
             unitNumber: unit.unitNumber,
             startDate: startDate,

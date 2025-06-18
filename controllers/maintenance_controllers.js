@@ -1,5 +1,6 @@
 import MaintenanceRequest from "../models/maintenance.model.js";
 import { maintenanceSchema } from "../schemas/maintenance.schema.js";
+import { Unit } from "../models/unit_models.js";
 
 // Create a maintenance request
 export const createMaintenanceRequest = async (req, res) => {
@@ -8,12 +9,19 @@ export const createMaintenanceRequest = async (req, res) => {
     if (error) {
         return res.status(400).json({ error: error.details[0].message });
     }
+    const { tenantId, unitId } = value;
 
     try {
-        const imageUrl = req.file?.path || null;
-    const request = await MaintenanceRequest.create({value, image: imageUrl});
+        const assignedUnit = await Unit.findOne({ _id: unitId, tenant: tenantId });
+        
+        if (!assignedUnit) {
+            return res.status(403).json({ error: "You are not assigned to this room" });
+        }
+        const imageUrls = req.files?.map(file => file.path) || [];
+        const request = await MaintenanceRequest.create({ value, images: imageUrls });
         res.status(201).json(request);
-    } catch (error) {
+
+        } catch (error) {
         res.status(500).json({ error: "Server Error/Upload failed", details: error.message });
     }
 };

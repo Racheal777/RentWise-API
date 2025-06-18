@@ -7,6 +7,6 @@ export const unitRouter = Router()
 
 unitRouter.post('/', authenticate, postUnit)
 
-unitRouter.get('/unit', getUnit)
+unitRouter.get('/', getUnit)
 
-unitRouter.get('/unit/:id', getUnitById)
+unitRouter.get('/:id', getUnitById)

@@ -2,8 +2,8 @@ import { Unit } from "../models/unit_models.js";
 
 export const postUnit = async (req, res) => {
     try{
-         const { propertyId, UnitNumber, rentAmount, Status } = req.body;
-         const unit = await Unit.create({propertyId, UnitNumber, rentAmount, Status, tenantId:req.user.userId});
+         const { propertyId, unitNumber, rentAmount, status } = req.body;
+         const unit = await Unit.create({propertyId, unitNumber, rentAmount, status, tenantId:req.user.userId});
          res.status(201).json(unit);
 
     } catch(error) {
