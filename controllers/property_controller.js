@@ -1,10 +1,11 @@
 import { Property } from "../models/properties_model.js"
+import { propertiesSchema } from "../schemas/controller_schema.js";
 
 
 // this is to create properties in a database 
 export const createProperty = async (req, res) => {
   try {
-    const {name, address, type, description, image} = req.body
+    const {name, address, type, description, image} = propertiesSchema.validate(req.body)
     console.log(req.user)
     
     if (req.file?.path) {
