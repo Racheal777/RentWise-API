@@ -1,7 +1,6 @@
 import express from "express"
 import cors from "cors"
 import mongoose from "mongoose"
-import { userRouter } from "./routes/user_routes.js"
 import { unitRouter } from "./routes/unit_routes.js"
 import { PropertyRouter } from "./routes/property_routes.js"
 import { mongoURI, PORT } from "./config/env.js"
@@ -12,15 +11,13 @@ import { paymentRouter } from "./routes/payment_routes.js"
 import { userRouter } from "./routes/user_routes.js"
 
 
-import { unitRouter } from "./routes/unit_routes.js"
-import { PropertyRouter } from "./routes/property_routes.js"
+
 import { assignmentRouter } from "./routes/tenantAssignment_routes.js"
 import maintenanceRoute from "./routes/Maintenance_route.js"
 import notificationRoute from "./routes/notification_route.js"
 
 const app = express()
 app.use(express.json());
-
 
 
 
