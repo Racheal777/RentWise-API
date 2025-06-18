@@ -4,7 +4,8 @@ import { loginUser, signUp } from "../controllers/user_controller.js";
 
 export const userRouter = Router();
 
-// userRouter.post('/auth/signup',secureRoute('signUp',signUp));- since this is opened to anyone secureroute is not required here.
+// userRouter.post('/auth/signup',secureRoute('signUp',signUp));
+// since this is opened to anyone secureroute is not required here.
 
 userRouter.post('/auth/signup',signUp);
 
