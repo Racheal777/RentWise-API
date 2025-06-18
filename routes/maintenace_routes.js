@@ -14,8 +14,8 @@ export const maintenanceRouter = Router()
 maintenanceRouter.post("/maintenance", upload.array("images", 5), authenticate, createMaintenanceRequest);
 
 // Admin views all maintenance requests
-maintenanceRouter.get("/maintenance", getAllMaintenanceRequests);
+maintenanceRouter.get("/maintenance", authenticate, getAllMaintenanceRequests);
 
 // Admin updates the status of a request
-maintenanceRouter.put("/maintenance/:id/status", updateMaintenanceStatus);
+maintenanceRouter.put("/maintenance/:id/status", authenticate, updateMaintenanceStatus);
 

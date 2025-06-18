@@ -4,18 +4,18 @@ import { maintenanceSchema } from "../schemas/maintenace.schema";
 
 const maintenanceRequestSchema = new Schema({
   tenantId: {
-    type: Number,
+    type: Schema.Types.ObjectId,
     ref: "Tenant",
     required: true,
   },
   unitId: {
-    type: Number,
+    type: Schema.Types.ObjectId,
     ref: "Unit",
     required: true,
   },
   category: {
     type: String,
-    enum: ["Plumbing", "Electrical", "Cleaning", "Appliance", "Other"],
+    enum: ["Plumbing", "Electrical", "Cleaning", "Appliance", "General", "Other"],
     required: true,
   },
   description: {

@@ -7,7 +7,7 @@ const maintenanceSchema = Joi.object({
   unitId: Joi.string().required().messages({
     "any.required": "Unit ID is required"
   }),
-  category: Joi.string().valid("Plumbing", "Electrical", "HVAC", "General", "Other").required().messages({
+  category: Joi.string().valid("Plumbing", "Electrical", "Cleaning", "General", "Appliance", "Other").required().messages({
     "any.required": "Category is required",
     "any.only": "Invalid category"
   }),
