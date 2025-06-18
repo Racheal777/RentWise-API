@@ -5,11 +5,13 @@ import 'dotenv/config'
 // import { userRouter } from "./routes/user_routes.js"
 import { paymentRouter } from "./routes/payment_routes.js"
 import { userRouter } from "./routes/user_routes.js"
-import rentRoute from "./routes/notification_route.js"
+
 
 import { unitRouter } from "./routes/unit_routes.js"
 import { PropertyRouter } from "./routes/property_routes.js"
 import { assignmentRouter } from "./routes/tenantAssignment_routes.js"
+import maintenanceRoute from "./routes/Maintenance_route.js"
+import notificationRoute from "./routes/notification_route.js"
 
 const app = express()
 app.use(express.json());
@@ -30,9 +32,10 @@ export const secret = process.env.JWT_SECRET
 // app.use('/api/v1/users', userRouter)
 app.use('/api/v1', paymentRouter)
 app.use('/api/v1/users', userRouter)
-app.use('/api/v1/tenants', rentRoute)
+app.use('/api/v1/notification', notificationRoute)
 app.use('/api/v1/units',unitRouter)
 app.use('/api/v1/properties', PropertyRouter)
+app.use('/api/v1/Maintenance', maintenanceRoute)
 
 app.use('/api/v1/tenants', assignmentRouter);
 

@@ -1,7 +1,8 @@
 import { Payment } from '../models/payment_model.js';
-
-export const notifyRentDue = async (req, res) => {
+//Define the Rent Reminder Function
+ const notifyRentDue = async (req, res) => {
   try {
+
     const currentMonth = new Date().toISOString().slice(0, 7); // "2025-06"
 
     const payments = await Payment.find({

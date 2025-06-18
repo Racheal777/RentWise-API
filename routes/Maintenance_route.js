@@ -1,8 +1,8 @@
 import express from 'express'
-import notifyMaintenance from '../controllers/Note_Maintenance_Con';
+import sendMaintenanceNotifications from '../controllers/Note_Maintenance_Con.js';
  
 const maintenanceRoute = express.Router();
 
-maintenanceRoute.get('/notify/maintenance', notifyMaintenance)
+maintenanceRoute.get('/notify/maintenance', sendMaintenanceNotifications)
 
 export default maintenanceRoute;
