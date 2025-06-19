@@ -2,21 +2,12 @@ import { Schema, model } from "mongoose";
 import normalize from "normalize-mongoose"
 
 const tenantSchema = new Schema({
-    fullName: {
-        type: String,
-        required: true
+    tenantId: {
+        type: Schema.Types.ObjectId, ref: "User"
     },
 
-    email: String,
-
-    propertyId: {
-        type: String,
-        required: true
-    },
-
-    unitNumber: {
-        type: Number,
-        required: true
+    unitId: {
+        type: Schema.Types.ObjectId, ref: "Unit"
     },
 
     startDate: {
