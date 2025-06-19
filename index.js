@@ -15,6 +15,7 @@ import rentRoute from "./routes/notification_route.js"
 
 
 import { assignmentRouter } from "./routes/tenantAssignment_routes.js"
+import { maintenanceRouter } from "./routes/maintenance_routes.js"
 
 const app = express()
 app.use(express.json());
@@ -28,7 +29,7 @@ app.use('/api/v1/users', userRouter)
 app.use('/api/v1/tenants', rentRoute)
 app.use('/api/v1/units',unitRouter)
 app.use('/api/v1/properties', PropertyRouter)
-
+app.use('/api/v1/maintenance', maintenanceRouter)
 app.use('/api/v1/tenants', assignmentRouter);
 app.use('/api/v1/dashboard', dashboardRouter); //bis
 

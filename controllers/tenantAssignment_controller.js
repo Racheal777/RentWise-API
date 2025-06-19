@@ -1,10 +1,9 @@
 import { Unit } from "../models/unit_models.js";
-import { User } from "../models/user_model.js";
 import { Tenant } from "../models/tenant_model.js";
 
 export const assignUnit = async (req, res) => {
     try {
-        const { unitId, tenantId, period} = req.body;
+        const { unitId,  period } = req.body;
     
         const unit = await Unit.findById(unitId);
     
@@ -22,15 +21,17 @@ export const assignUnit = async (req, res) => {
     
         // assign unit to tenant
         const date = new Date();
+        console.log('date', date, date.toISOString())
         const startDate = `${date.toLocaleString('default', {month: 'long'})} ${date.getDay()}, ${date.getFullYear()}`
         const endDate = `${date.toLocaleString('default', {month: 'long'})} ${date.getDay()-1}, ${date.getFullYear() + parseInt(period)}`;
     
         const newTenant = await Tenant.create({
-            tenantId,
+            tenantId: req.user.id,
             propertyId: unit.propertyId,
-            unitNumber: unit.unitNumber,
+            unitId: unit.id,
             startDate: startDate,
-            endDate: endDate
+            endDate: endDate,
+            amount: unit.rentAmount * parseInt(period)
         })
     
         // update unit status
@@ -49,12 +50,8 @@ export const assignUnit = async (req, res) => {
 
 export const getTenants = async (req, res) => {
     try {
-        const { role } = req.body;
-    
-        if (role !== 'admin') {
-            return res.status(401).json({error: "unathorized access"});
-        }
-    
+        
+
         const tenants = await Tenant.find();
         res.status(201).json({"Tenants": tenants});
     } catch (error) {

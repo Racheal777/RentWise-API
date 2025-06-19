@@ -1,6 +1,7 @@
-import MaintenanceRequest from "../models/maintenance.model.js";
-import { maintenanceSchema } from "../schemas/maintenance.schema.js";
+import { MaintenanceRequest } from "../models/maintenance_model.js";
+import { maintenanceSchema } from "../schemas/maintenance_schema.js";
 import { Unit } from "../models/unit_models.js";
+import { Tenant } from "../models/tenant_model.js";
 
 // Create a maintenance request
 export const createMaintenanceRequest = async (req, res) => {
@@ -9,22 +10,35 @@ export const createMaintenanceRequest = async (req, res) => {
     if (error) {
         return res.status(400).json({ error: error.details[0].message });
     }
-    const { tenantId, unitId } = value;
+   
 
     try {
-        const assignedUnit = await Unit.findOne({ _id: unitId, tenant: tenantId });
+        const assignedUnit = await Tenant.findOne({ tenantId: req.user.id });
         
         if (!assignedUnit) {
             return res.status(403).json({ error: "You are not assigned to this room" });
         }
-        const imageUrls = req.files?.map(file => file.path) || [];
-        const request = await MaintenanceRequest.create({ value, images: imageUrls });
+        // const imageUrls = req.files?.map(file => file.path) || [];
+        const request = await MaintenanceRequest.create({ ...value });
         res.status(201).json(request);
 
         } catch (error) {
         res.status(500).json({ error: "Server Error/Upload failed", details: error.message });
     }
 };
+
+// Get all maintenance requests for a specific tenant
+export const getTenantMaintenanceRequests = async (req, res) => {
+    const tenantId = req.user.id; 
+
+    try {
+        const requests = await MaintenanceRequest.find({ tenantId });
+        res.status(200).json(requests);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch maintenance requests", details: error.message });
+    }
+};
+
 
 // Get all maintenance requests (admin)
 export const getAllMaintenanceRequests = async (req, res) => {
