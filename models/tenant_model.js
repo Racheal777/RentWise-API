@@ -19,6 +19,15 @@ const tenantSchema = new Schema({
         type: String,
         required: true
     },
+
+    amount: {
+        type: Number
+    },
+    paymentStatus:{
+        type: String,
+        default: "pending"
+
+    }
 });
 
 tenantSchema.plugin(normalize);

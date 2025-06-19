@@ -6,12 +6,12 @@ const maintenanceRequestSchema = new Schema({
   tenantId: {
     type: Schema.Types.ObjectId,
     ref: "Tenant",
-    required: true,
+  
   },
   unitId: {
     type: Schema.Types.ObjectId,
     ref: "Unit",
-    required: true,
+   
   },
   category: {
     type: String,
@@ -38,4 +38,4 @@ const maintenanceRequestSchema = new Schema({
 }, { timestamps: true });
 
 maintenanceRequestSchema.plugin(normalize)
-export const MaintenanceRequest = mongoose.model("MaintenanceRequest", maintenanceRequestSchema);
+export const MaintenanceRequest = model("MaintenanceRequest", maintenanceRequestSchema);
