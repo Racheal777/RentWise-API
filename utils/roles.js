@@ -12,7 +12,8 @@ export const roles = [
         'getPropertyById',
         'createProperty',
         'patchProperty',
-        'deleteProperty'
+        'deleteProperty',
+        'viewTenants'
     ],
    },
    {

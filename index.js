@@ -18,6 +18,7 @@ import maintenanceRoute from "./routes/Maintenance_route.js"
 import notificationRoute from "./routes/notification_route.js"
 import notifyRentDue from "./controllers/notification_controller.js"
 import sendMaintenanceNotifications from "./controllers/Note_Maintenance_Con.js"
+import { maintenanceRouter } from "./routes/maintenance_routes.js"
 
 const app = express()
 app.use(express.json());
@@ -33,6 +34,7 @@ app.use('/api/v1/units',unitRouter)
 app.use('/api/v1/properties', PropertyRouter)
 app.use('/api/v1/Maintenance', maintenanceRoute)
 
+app.use('/api/v1/maintenance', maintenanceRouter)
 app.use('/api/v1/tenants', assignmentRouter);
 
 
