@@ -26,6 +26,19 @@ export const createMaintenanceRequest = async (req, res) => {
     }
 };
 
+// Get all maintenance requests for a specific tenant
+export const getTenantMaintenanceRequests = async (req, res) => {
+    const tenantId = req.user._id; 
+
+    try {
+        const requests = await MaintenanceRequest.find({ tenantId });
+        res.status(200).json(requests);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch maintenance requests", details: error.message });
+    }
+};
+
+
 // Get all maintenance requests (admin)
 export const getAllMaintenanceRequests = async (req, res) => {
     try {

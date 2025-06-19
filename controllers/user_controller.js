@@ -3,6 +3,7 @@ import { secret } from "../config/env.js";
 import { User } from "../models/user_model.js";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken'
+import { signUpSchema } from "../schemas/user_schema.js";
 
 
 
@@ -17,15 +18,19 @@ const otpGenerator = (length = 6) => {
 export const signUp = async (req, res) => {
     const { firstName, lastName, email, password,confirmPassword, role } = req.body;
 
-    // validate the password and confirmpassword
-    if (password !== confirmPassword){
-        return res.status(400).json({message: "Confirm password should match the password"})
-    };
+    const {error, value} = signUpSchema.validate(req.body);
+    if(error){
+        return res.status(400).json({error})
+    }
 
-    console.log('userData', firstName, lastName, email, password,confirmPassword, role)
+    // // validate the password and confirmpassword
+    // if (req.body.password !== req.body.confirmPassword){
+    //     return res.status(400).json({message: "Confirm password should match the password"})
+    // };
 
+    // console.log('userData', firstName, lastName, email, password,confirmPassword, role)
     // finds if the user already exist by using the email
-    const findUser = await User.findOne({ email })
+    const findUser = await User.findOne({email});
     console.log(findUser, "found")
 
     // if user found just say user exsit if not hash the password and continue to save it.
@@ -41,14 +46,19 @@ export const signUp = async (req, res) => {
         console.log("otp", otp);
 
         // save the new user details in the database using the format below.
+        // const saveUserData = await User.create({
+        //     firstName,
+        //     lastName,
+        //     email,
+        //     password: hashPassword,
+        //     role: role,
+        //     otp: otp,
+        //     otpExpiresAt: new Date(Date.now() + 5 * 60 * 1000)
+        // });
+
         const saveUserData = await User.create({
-            firstName,
-            lastName,
-            email,
-            password: hashPassword,
-            role: role,
-            otp: otp,
-            otpExpiresAt: new Date(Date.now() + 5 * 60 * 1000)
+            ...value,
+            password:hashPassword
         });
 
         // show the saved user details in the console
@@ -87,7 +97,7 @@ export const loginUser = async (req, res) => {
             return res.status(401).json({ message: 'Invalid credentials' });
 
         // if both password and email are valid, generate a JWT token to be use for authentication. here the user's id and role, secret key with an expiring period of 1hr is embedded in the token.
-        const token = jwt.sign({ userId: user.id, role: user.role }, secret, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user.id, role: user.role }, secret, { expiresIn: '1h' });
         res.json({ token });
 
     } catch (error) {
