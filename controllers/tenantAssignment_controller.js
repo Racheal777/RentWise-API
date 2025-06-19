@@ -1,10 +1,9 @@
 import { Unit } from "../models/unit_models.js";
-import { User } from "../models/user_model.js";
 import { Tenant } from "../models/tenant_model.js";
 
 export const assignUnit = async (req, res) => {
     try {
-        const { unitId, tenantId, period} = req.body;
+        const { unitId, tenantId, period } = req.body;
     
         const unit = await Unit.findById(unitId);
     
