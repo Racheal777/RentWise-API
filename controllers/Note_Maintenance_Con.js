@@ -1,6 +1,6 @@
 // controllers/maintenanceNotificationController.js
 
-import { MaintenanceRequest } from "../models/Maintenance_model.js";
+import { MaintenanceRequest } from "../models/maintenance_model.js";
 import { Tenant } from "../models/tenant_model.js";
 import { Unit } from "../models/unit_models.js";
 
