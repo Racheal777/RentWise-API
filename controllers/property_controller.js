@@ -4,15 +4,26 @@ import { propertiesSchema } from "../schemas/controller_schema.js";
 
 // this is to create properties in a database 
 export const createProperty = async (req, res) => {
+
+  console.log('uhuyftdtfdt')
   try {
     const {error, value} = propertiesSchema.validate(req.body)
-    console.log(req.user)
+  
 
     if(error){
       return res.status(400).json(error.details[0].message)
     }
+
+    const image = req.file
+    // let imagePath = ""
+
+    // images.forEach(element => {
+    //   return imagePath = element.path
+    // });
+
+    // console.log('file',images)
     
-    // if (req.file?.path) {
+    // if (req.file) {
     //   req.body.image = req.file.path;
     // }
     const property = await Property.create({
@@ -20,7 +31,8 @@ export const createProperty = async (req, res) => {
       address: value.address,
       type: value.type,
       description: value.description,
-      user: req.user.id
+      user: req.user.id,
+      image: image.path
     });
     res.status(201).json(property);
   } catch (error) {

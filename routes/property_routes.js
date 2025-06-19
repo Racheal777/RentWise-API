@@ -8,12 +8,13 @@ import {
   deleteMyProperty,
 } from "../controllers/property_controller.js";
 import { authenticate, hasPermission } from "../middlewares/auth.js";
-import { upload } from "../middlewares/image_upload.js";
-import { checkPermission } from "../utils/roles.js";
+
+
+import { parser } from "../utils/cloudinary.js";
 
 export const PropertyRouter = Router();
 
-PropertyRouter.post("/", authenticate, hasPermission("createPrope"), upload.single("image"), createProperty);
+PropertyRouter.post("/", authenticate, hasPermission("createProperty"), parser.single("images"), createProperty);
 PropertyRouter.get("/", getAllProperties);
 PropertyRouter.get("/my/properties", authenticate, getMyProperties);
 PropertyRouter.get("/:id", getPropertyById);

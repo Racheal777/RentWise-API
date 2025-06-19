@@ -1,6 +1,6 @@
-import multer from "multer";
-import { storage } from "../config/cloudinary.config.js";
+// import multer from "multer";
+// import { storage } from "../config/cloudinary.config.js";
 
-const upload = multer({ storage });
+// const upload = multer({ storage });
 
-export default upload;
+// export default upload;

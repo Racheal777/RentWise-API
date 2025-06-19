@@ -20,7 +20,7 @@ export const hasPermission = (permission) => {
       const role = req.user.role;
       const userRole = roles.find((element) => (element.role = role));
       if (userRole && userRole.permissions.includes(permission)) {
-        console.log('userrole', userRole, permission)
+        
         next();
       } else {
         res.status(403).json("not Authorized");
