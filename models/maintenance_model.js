@@ -1,6 +1,6 @@
-import {Schema, model}from "mongoose";
+import { Schema, model } from "mongoose";
 import normalize from "normalize-mongoose"
-import { maintenanceSchema } from "../schemas/maintenace.schema";
+
 
 const maintenanceRequestSchema = new Schema({
   tenantId: {
@@ -23,14 +23,19 @@ const maintenanceRequestSchema = new Schema({
     required: true,
   },
   image: {
-    type: String, 
+    type: String,
   },
   status: {
     type: String,
     enum: ["Pending", "In Progress", "Resolved"],
     default: "Pending",
   },
+  role: {
+    type: String,
+    enum: ["tenant", "admin"],
+    default: "tenant"
+  }
 }, { timestamps: true });
 
-maintenanceSchema.plugin(normalize)
+maintenanceRequestSchema.plugin(normalize)
 export const MaintenanceRequest = mongoose.model("MaintenanceRequest", maintenanceRequestSchema);
