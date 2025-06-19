@@ -4,6 +4,8 @@ import mongoose from "mongoose"
 import { unitRouter } from "./routes/unit_routes.js"
 import { PropertyRouter } from "./routes/property_routes.js"
 import { mongoURI, PORT } from "./config/env.js"
+import { dashboardRouter } from "./routes/dashboard_route.js" //bis
+
 
 import 'dotenv/config'
 // import { userRouter } from "./routes/user_routes.js"
@@ -28,6 +30,7 @@ app.use('/api/v1/units',unitRouter)
 app.use('/api/v1/properties', PropertyRouter)
 
 app.use('/api/v1/tenants', assignmentRouter);
+app.use('/api/v1/dashboard', dashboardRouter); //bis
 
 
 await mongoose.connect(mongoURI);
