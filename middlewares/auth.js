@@ -1,37 +1,33 @@
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import { secret } from "../config/env.js";
-import { checkPermission } from '../utils/permission.js'
+import { roles } from "../utils/roles.js";
 
 export const authenticate = (req, res, next) => {
   try {
-    const token = req.header('Authorization').replace('Bearer ', '');
+    const token = req.header("Authorization").replace("Bearer ", "");
     const decoded = jwt.verify(token, secret);
+    console.log("decoded", decoded);
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Please authenticate' });
+    res.status(401).json({ message: "Please authenticate" });
   }
 };
 
-
-export const authorize = (required) => {
-  return (req, res, next) => {
-    const role = req.user.role;
-    const requiredList = Array.isArray(required) ? required : [required];
-
-    // Check if role is allowed directly
-    if (requiredList.includes(role)) {
-      return next();
+export const hasPermission = (permission) => {
+  return async (req, res, next) => {
+    try {
+      const role = req.user.role;
+      const userRole = roles.find((element) => (element.role = role));
+      if (userRole && userRole.permissions.includes(permission)) {
+        console.log('userrole', userRole, permission)
+        next();
+      } else {
+        res.status(403).json("not Authorized");
+      }
+    } catch (error) {
+      next();
     }
-
-    // Check if any of the permissions are allowed
-    const isAllowed = requiredList.every(action => checkPermission(role, action));
-
-    if (!isAllowed) {
-      return res.status(403).json({ message: `Access denied for role ${role}` });
-    }
-
-    next();
   };
 };
 

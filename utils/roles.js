@@ -1,27 +1,31 @@
 
  
-export const permission = {
-    admin:[
-        'signUp',
-        'loginUser',
+export const roles = [
+
+   {
+    role: "admin",
+    permissions:[
         'postUnit',
         'getUnit',
         'getUnitById',
-        'getAllProperties',
+        'getMyProperties',
         'getPropertyById',
         'createProperty',
         'patchProperty',
         'deleteProperty'
     ],
-    tenant:[
-        'signUp',
-        'loginUser',
+   },
+   {
+
+    role: "tenant",
+    permissions:[
         'getUnit',
         'getUnitById',
         'getAllProperties',
         'getPropertyById'
     ]
-};
+   }
+];
 
 export function checkPermission (role, action){
     if (role === 'admin') {
