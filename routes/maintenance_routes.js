@@ -1,10 +1,6 @@
-import {Router} from "express";
-import {upload} from "../middlewares/multer_middleware.js";
-import {
-    createMaintenanceRequest,
-    getAllMaintenanceRequests,
-    updateMaintenanceStatus
-} from "../controllers/maintenance_controllers.js";
+import { Router } from "express";
+import { upload } from "../middlewares/maintenance_middleware.js";
+import {createMaintenanceRequest, getAllMaintenanceRequests, updateMaintenanceStatus} from "../controllers/maintenance_controllers.js";
 import { authenticate } from '../middlewares/auth.js';
 
 
