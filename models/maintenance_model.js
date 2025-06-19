@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 import normalize from "normalize-mongoose"
-import { maintenanceSchema } from "../schemas/maintenance_schema.js";
+
 
 const maintenanceRequestSchema = new Schema({
   tenantId: {
@@ -37,5 +37,5 @@ const maintenanceRequestSchema = new Schema({
   }
 }, { timestamps: true });
 
-maintenanceSchema.plugin(normalize)
+maintenanceRequestSchema.plugin(normalize)
 export const MaintenanceRequest = mongoose.model("MaintenanceRequest", maintenanceRequestSchema);
