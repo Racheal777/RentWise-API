@@ -5,16 +5,26 @@ import { propertiesSchema } from "../schemas/controller_schema.js";
 // this is to create properties in a database 
 export const createProperty = async (req, res) => {
   try {
-    const {name, address, type, description, image} = propertiesSchema.validate(req.body)
+    const {error, value} = propertiesSchema.validate(req.body)
     console.log(req.user)
-    
-    if (req.file?.path) {
-      req.body.image = req.file.path;
+
+    if(error){
+      return res.status(400).json(error.details[0].message)
     }
-    const property = await Property.create({name,address,type,description,image:req.body,image,user:req.user.userId});
+    
+    // if (req.file?.path) {
+    //   req.body.image = req.file.path;
+    // }
+    const property = await Property.create({
+      name: value.name,
+      address: value.address,
+      type: value.type,
+      description: value.description,
+      user: req.user.id
+    });
     res.status(201).json(property);
   } catch (error) {
-    res.status(400).json({ error: 'ensure all inputs field are populated or entered' });
+    res.status(500).json({ error: error});
   }
 };
 
@@ -50,15 +60,7 @@ export const patchProperty = async (req, res) => {
 };
 
 // this to delete a property 
-export const deleteProperty = async (req, res) => {
-  try {
-    const property = await Property.findByIdAndDelete(req.params.id);
-    if (!property) return res.status(404).json({ message: 'Property not found' });
-    res.json({ message: 'Property deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ error: 'server error'});
-  }
-};
+
 
 // get property by a specific user
 export const getMyProperties = async (req, res) => {
