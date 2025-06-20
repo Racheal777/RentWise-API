@@ -16,7 +16,7 @@ export const PropertyRouter = Router();
 
 PropertyRouter.post("/", authenticate, hasPermission("createProperty"), parser.single("images"), createProperty);
 PropertyRouter.get("/", getAllProperties);
-PropertyRouter.get("/my/properties", authenticate, getMyProperties);
+PropertyRouter.get("/my/properties", authenticate, hasPermission("getMyproperties"),getMyProperties);
 PropertyRouter.get("/:id", getPropertyById);
-PropertyRouter.patch("/:id", patchProperty);
-PropertyRouter.delete("/:id", authenticate, deleteMyProperty);
+PropertyRouter.patch("/:id", authenticate, hasPermission("patchProperty"), patchProperty);
+PropertyRouter.delete("/:id", authenticate, hasPermission("deleteProperty"), deleteMyProperty);
