@@ -1,27 +1,40 @@
 // controllers/paymentController.js
 import axios from "axios";
 import { Payment } from "../models/payment_model.js";
+import { paymentSchema } from "../schemas/payment_schema.js";
+import Joi from "joi";
+import mongoose from "mongoose";
+import 'dotenv/config'
 
 const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 
 // 1️ INITIATE PAYMENT
-export const initializePayment = async (req, res) => {
-  const { email, amount, tenantId, unitId, month } = req.body;
 
-  if (!email || !amount || !tenantId || !unitId || !month) {
-    return res.status(400).json({ error: "Missing required fields" });
+export const initializePayment = async (req, res) => {
+  // Extend the existing paymentSchema with email validation
+  const schema = paymentSchema.keys({
+    email: Joi.string().email().required()
+  });
+
+  const { error, value } = schema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
   }
+
+  const { email, expectedAmount, amountPaid, tenantId, unitId, month } = value;
 
   try {
     const response = await axios.post(
       "https://api.paystack.co/transaction/initialize",
       {
         email,
-        amount: amount * 100, // Paystack expects amount in kobo
+        amount: amountPaid * 100, // Paystack expects amount in kobo
         metadata: {
           tenantId,
           unitId,
           month,
+          amount: expectedAmount, // expected rent (used during verification)
         }
       },
       {
@@ -43,16 +56,27 @@ export const initializePayment = async (req, res) => {
 };
 
 
-// VERIFY PAYMENT
-export const verifyPayment = async (req, res) => {
-  const { reference } = req.body;
 
-  if (!reference) {
-    return res.status(400).json({ error: "Reference is required" });
+
+// VERIFY PAYMENT
+
+export const verifyPayment = async (req, res) => {
+  // Validate the reference using Joi
+  const schema = Joi.object({
+    reference: Joi.string().required().messages({
+      "any.required": "Reference is required",
+      "string.empty": "Reference cannot be empty"
+    })
+  });
+
+  const { error, value } = schema.validate(req.body);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
   }
 
   try {
-    const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
+    const response = await axios.get(`https://api.paystack.co/transaction/verify/${value.reference}`, {
       headers: {
         Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`
       }
@@ -64,26 +88,29 @@ export const verifyPayment = async (req, res) => {
       return res.status(400).json({ error: "Transaction not successful" });
     }
 
-    // Prevent duplicate entries
-    const exists = await Payment.findOne({
-      tenantId: data.metadata.tenantId,
-      month: data.metadata.month
-    });
+    const { tenantId, unitId, month, amount: expectedAmount } = data.metadata;
+    const amountPaid = data.amount / 100;
+    const amountDue = expectedAmount - amountPaid;
 
+    const exists = await Payment.findOne({ tenantId, month });
     if (exists) {
       return res.status(409).json({ message: "Payment already recorded" });
     }
 
     const payment = new Payment({
-      tenantId: data.metadata.tenantId,
-      unitId: data.metadata.unitId,
-      amount: data.amount / 100, // convert from kobo
-      month: data.metadata.month,
-      status: "paid",
+      tenantId,
+      unitId,
+      referenceId: data.reference,  // Save the reference
+      expectedAmount,
+      amountPaid,
+      amountDue: amountDue > 0 ? amountDue : 0,
+      month,
+      status: amountPaid >= expectedAmount ? "paid" : "partial",
       paidAt: data.paid_at
     });
 
     await payment.save();
+
     res.status(200).json({ message: "Payment verified and recorded", payment });
 
   } catch (err) {
@@ -94,17 +121,28 @@ export const verifyPayment = async (req, res) => {
 
 
 
+
+
 // GET PAYMENTS FOR TENANT
-
 export const getTenantPayments = async (req, res) => {
-  const { tenantId } = req.query;
+  const schema = Joi.object({
+    tenantId: Joi.string()
+      .custom((value, helpers) => {
+        return mongoose.Types.ObjectId.isValid(value)
+          ? value
+          : helpers.message("Invalid tenantId");
+      })
+      .required()
+  });
 
-  if (!tenantId) {
-    return res.status(400).json({ error: "tenantId query param is required" });
+  const { error, value } = schema.validate(req.query);
+
+  if (error) {
+    return res.status(400).json({ error: error.details[0].message });
   }
 
   try {
-    const payments = await Payment.find({ tenantId }).sort({ createdAt: -1 });
+    const payments = await Payment.find({ tenantId: value.tenantId }).sort({ createdAt: -1 });
     res.status(200).json({ payments });
   } catch (error) {
     console.error("Error fetching tenant payments:", error.message);
@@ -115,49 +153,60 @@ export const getTenantPayments = async (req, res) => {
 
 
 
-
-
+// get due payments
 export const getDuePayments = async (req, res) => {
   try {
-    const duePayments = await Payment.find({ status: "unpaid" }).sort({ month: 1 });
+    const duePayments = await Payment.find({
+      status: { $in: ["unpaid", "partial"] }
+    }).sort({ month: 1 });
 
     res.status(200).json({ duePayments });
   } catch (error) {
     console.error("Error fetching due payments:", error.message);
-    res.status(500).json({ error: "Something went wrong" });
+    res.status(500).json({ error: "Failed to fetch due payments" });
   }
 };
 
 
 
-export const createPayments = async (req, res) => {
-  const { tenantId, unitId, amount, month, status, paidAt } = req.body;
 
-  if (!tenantId || !unitId || !amount || !month || !status) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
+// manual payments
+// export const createPayments = async (req, res) => {
 
-  try {
-    const exists = await Payment.findOne({ tenantId, month });
+//   const { error, value } = paymentSchema.validate(req.body);
+//   if (error) {
+//     return res.status(400).json({ error: error.details[0].message });
+//   }
 
-    if (exists) {
-      return res.status(409).json({ message: "Payment already recorded for this month" });
-    }
+//   const { tenantId, unitId, amount, amountPaid = 0, month, paidAt } = value;
 
-    const payment = new Payment({
-      tenantId,
-      unitId,
-      amount,
-      month,
-      status,
-      paidAt: paidAt || new Date()
-    });
+//   try {
+//     const exists = await Payment.findOne({ tenantId, month });
+//     if (exists) {
+//       return res.status(409).json({ message: "Payment already recorded for this month" });
+//     }
 
-    await payment.save();
-    res.status(201).json({ message: "Payment created manually", payment });
+//     const amountDue = amount - amountPaid;
+//     const status =
+//       amountPaid >= amount ? "paid" : amountPaid > 0 ? "partial" : "unpaid";
 
-  } catch (err) {
-    console.error("Create payment error:", err.message);
-    res.status(500).json({ error: "Failed to create payment" });
-  }
-};
+//     const payment = new Payment({
+//       tenantId,
+//       unitId,
+//       amount,
+//       amountPaid,
+//       amountDue: amountDue > 0 ? amountDue : 0,
+//       month,
+//       status,
+//       paidAt: status === "unpaid" ? null : paidAt || new Date()
+//     });
+
+//     await payment.save();
+//     res.status(201).json({ message: "Payment created manually", payment });
+
+//   } catch (err) {
+//     console.error("Create payment error:", err.message);
+//     res.status(500).json({ error: "Failed to create payment" });
+//   }
+// };
+
