@@ -1,5 +1,6 @@
 import { Schema, model } from "mongoose";
 import normalize from "normalize-mongoose"
+import { maintenanceSchema } from "../schemas/maintenace.schema.js";
 
 
 const maintenanceRequestSchema = new Schema({
