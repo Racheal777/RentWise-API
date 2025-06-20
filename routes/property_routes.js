@@ -13,7 +13,7 @@ import { checkPermission } from "../utils/roles.js";
 
 export const PropertyRouter = Router();
 
-PropertyRouter.post("/", authenticate, hasPermission("createPrope"), upload.single("image"), createProperty);
+PropertyRouter.post("/", authenticate, hasPermission("createProperty"), upload.single("image"), createProperty);
 PropertyRouter.get("/", getAllProperties);
 PropertyRouter.get("/my/properties", authenticate, getMyProperties);
 PropertyRouter.get("/:id", getPropertyById);

@@ -1,5 +1,5 @@
 import { Property } from "../models/properties_model.js"
-import { propertiesSchema } from "../schemas/controller_schema.js";
+import { propertiesSchema } from "../schemas/property_schema.js";
 
 
 // this is to create properties in a database 
