@@ -63,7 +63,7 @@ export const getPropertyById = async (req, res) => {
 // this is to update the details of a property 
 export const patchProperty = async (req, res) => {
   try {
-    const property = await Property.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    const property = await Property.findByIdAndUpdate(req.params.id, req.body, { new: true }.populate('user'));
     if (!property) return res.status(404).json({ message: 'Property cannot be found' });
     res.json(property);
   } catch (error) {
@@ -71,13 +71,11 @@ export const patchProperty = async (req, res) => {
   }
 };
 
-// this to delete a property 
-
 
 // get property by a specific user
 export const getMyProperties = async (req, res) => {
   try {
-    const properties = await Property.find({ user: req.user.id });
+    const properties = await Property.find({ user: req.user.id }.populate('user'));
     res.json(properties);
   } catch (error) {
     res.status(500).json({ message: 'server error' });
@@ -87,7 +85,7 @@ export const getMyProperties = async (req, res) => {
 // to delete property only owned by a specific user 
 export const deleteMyProperty = async (req, res) => {
   try {
-    const property = await Property.findById(req.params.id);
+    const property = await Property.findById(req.params.id).populate('user');
     if (!property) {
       return res.status(404).json({ message: 'Property not found' });
     }
