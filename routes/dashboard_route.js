@@ -6,4 +6,4 @@ export const dashboardRouter = express.Router();
 // Route for fetching dashboard summary
 dashboardRouter.get('/summary', getDashboardSummary);
 
-export default dashboardRouter;
+// export default dashboardRouter;

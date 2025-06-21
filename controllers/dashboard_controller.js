@@ -1,7 +1,7 @@
-import Property from '../models/properties_model.js';
-import Tenant from '../models/tenant_model.js';
-import MaintenanceRequest from '../models/maintenance_model.js';
-import RentPayment from '../models/payment_model.js';
+import { Property } from '../models/properties_model.js';
+import { Tenant } from '../models/tenant_model.js';
+import { MaintenanceRequest } from '../models/maintenance_model.js';
+import { Payment } from '../models/payment_model.js';
 
 export const getDashboardSummary = async (req, res) => {
     try {
@@ -10,7 +10,7 @@ export const getDashboardSummary = async (req, res) => {
             Property.countDocuments(),
             Tenant.countDocuments(),
             MaintenanceRequest.countDocuments({ status: 'open' }),
-            RentPayment.countDocuments({ status: 'unpaid' })
+            Payment.countDocuments({ status: 'unpaid' })
         ]);
 
         // Send the response in JSON format
